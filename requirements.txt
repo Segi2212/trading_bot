@@ -1,0 +1,8 @@
+ccxt==4.2.95
+python-dotenv==1.0.1
+pandas==2.2.2
+numpy==1.26.4
+tensorflow==2.15.0
+scikit-learn==1.4.1.post1
+matplotlib==3.8.4
+mysql-connector-python==8.3.0

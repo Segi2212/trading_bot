@@ -1,5 +1,5 @@
 import numpy as np
-from tensorflow.keras.models import load_model
+from tensorflow.keras.models import load_model # type: ignore
 
 # Cargar el modelo (puedes adaptar la ruta según cómo lo guardes)
 modelo = load_model("modelo/modelo_lstm.h5")

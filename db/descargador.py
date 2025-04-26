@@ -56,3 +56,30 @@ def iniciar_descarga():
 
     descargar_datos(conexion, desde, hasta)
     conexion.close()
+
+def obtener_ultimo_timestamp(conexion):
+    cursor = conexion.cursor()
+    cursor.execute("""
+        SELECT MAX(timestamp) FROM ohlcv
+        WHERE symbol = %s AND timeframe = %s
+    """, (SYMBOL, TIMEFRAME))
+    resultado = cursor.fetchone()[0]
+    cursor.close()
+    return resultado if resultado else None
+
+def actualizar_datos():
+    conexion = conectar_db()
+
+    # Obtenemos el último timestamp y actual
+    desde_ts = obtener_ultimo_timestamp(conexion)
+    if not desde_ts:
+        print("No hay datos en la base. Ejecuta una descarga completa primero.")
+        return
+
+    desde_ts += 60_000  # siguiente minuto
+    hasta_ts = int(EXCHANGE.milliseconds())
+
+    print(f"Actualizando desde {datetime.utcfromtimestamp(desde_ts / 1000)} hasta ahora...")
+
+    descargar_datos(conexion, desde_ts, hasta_ts)
+    conexion.close()

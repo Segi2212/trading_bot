@@ -1,3 +1,8 @@
 .env
 venv
 __pycache__
+historial_entrenamiento.json
+modelo_lstm.h5
+scaler.pkl
+x.npy
+y.npy

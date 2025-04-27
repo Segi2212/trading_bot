@@ -14,5 +14,5 @@
 
 # print("Predicción:", "📈 SUBE" if clase else "📉 BAJA", f"({prob:.2%} confianza)")
 
-# from db.descargador import actualizar_datos
-# actualizar_datos()
+from db.descargador import actualizar_datos
+actualizar_datos()

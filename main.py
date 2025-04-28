@@ -16,5 +16,16 @@
 
 # from db.descargador import actualizar_datos
 # actualizar_datos()
-from simulador.trader_simulado import simular_operaciones
-simular_operaciones()
+# main.py
+
+
+
+# from data.preparar_dataset_entrenamiento import preparar_dataset_entrenamiento
+# if __name__ == "__main__":
+#     preparar_dataset_entrenamiento()
+# (Esto es provisional solo para generar el dataset. Luego pondremos un menú o selector si quieres algo más pro.)
+
+modo = "preparar"
+if modo == "preparar":
+    from data import preparar_dataset
+    preparar_dataset.preparar_dataset()

@@ -16,7 +16,6 @@ def obtener_ohlcv(exchange):
     )
     return ohlcv  # [timestamp, open, high, low, close, volume]
 
-# 🔵 NUEVA función para pruebas
 def obtener_ohlcv_test(bitso, timeframe="1m", limit=46):
     """
     Obtiene datos OHLCV para pruebas de simulación, con el shape adecuado para el modelo.

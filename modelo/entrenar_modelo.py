@@ -1,41 +1,39 @@
 import numpy as np
+from sklearn.utils import class_weight
 from keras.models import Sequential
-from keras.layers import LSTM, Dense, Dropout
-from keras.callbacks import EarlyStopping
-import json
+from keras.layers import LSTM, Dense
+from keras.optimizers import Adam
+import joblib
 
-# Cargar los datos
-X = np.load("modelo/X.npy")
-y = np.load("modelo/y.npy")
+def entrenar_modelo(X_train, y_train, X_val, y_val):
+    # Calcular pesos de clases
+    pesos = class_weight.compute_class_weight(
+        class_weight='balanced',
+        classes=np.unique(y_train),
+        y=y_train
+    )
+    class_weights = dict(enumerate(pesos))
 
-# Definir modelo
-modelo = Sequential()
-modelo.add(LSTM(units=64, return_sequences=True, input_shape=(X.shape[1], X.shape[2])))
-modelo.add(Dropout(0.2))
-modelo.add(LSTM(units=32))
-modelo.add(Dropout(0.2))
-modelo.add(Dense(units=1, activation="sigmoid"))
+    print(f"[Modelo] Pesos de clases aplicados: {class_weights}")
 
-# Compilar
-modelo.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+    model = Sequential()
+    model.add(LSTM(64, input_shape=(X_train.shape[1], X_train.shape[2])))
+    model.add(Dense(3, activation='softmax'))  # 3 clases: Baja, Neutro, Sube
 
-# Entrenar
-early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+    model.compile(optimizer=Adam(learning_rate=0.001),
+                  loss='sparse_categorical_crossentropy',
+                  metrics=['accuracy'])
 
-historial = modelo.fit(
-    X, y,
-    epochs=20,
-    batch_size=64,
-    validation_split=0.2,
-    callbacks=[early_stop],
-    verbose=1
-)
+    model.fit(
+        X_train, y_train,
+        epochs=50,
+        batch_size=64,
+        validation_data=(X_val, y_val),
+        class_weight=class_weights,  # <<< Aquí aplicamos el balanceo
+        verbose=2
+    )
 
-# Guardar modelo
-modelo.save("modelo/modelo_lstm.h5")
+    model.save('modelo_entrenado.h5')
+    print("[Modelo] Entrenamiento terminado y modelo guardado.")
 
-# Guardar historial
-with open("modelo/historial_entrenamiento.json", "w") as f:
-    json.dump(historial.history, f)
-
-print("✅ Modelo entrenado y guardado con éxito.")
+    return model

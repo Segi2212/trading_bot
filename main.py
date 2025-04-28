@@ -1,31 +1,25 @@
-# from data.recolector import conectar_bitso, obtener_ohlcv
-# from modelo.preprocesador import preparar_input_lstm
-
-# exchange = conectar_bitso()
-# ohlcv = obtener_ohlcv(exchange)
-
-# input_lstm = preparar_input_lstm(ohlcv)
-
-# print("Shape del input para el modelo:", input_lstm.shape)
-
-# from modelo.predictor import predecir_direccion
-
-# clase, prob = predecir_direccion(input_lstm)
-
-# print("Predicción:", "📈 SUBE" if clase else "📉 BAJA", f"({prob:.2%} confianza)")
-
-# from db.descargador import actualizar_datos
-# actualizar_datos()
 # main.py
 
+import os
+from dotenv import load_dotenv
 
+# Cargar variables de entorno
+load_dotenv()
 
-# from data.preparar_dataset_entrenamiento import preparar_dataset_entrenamiento
-# if __name__ == "__main__":
-#     preparar_dataset_entrenamiento()
-# (Esto es provisional solo para generar el dataset. Luego pondremos un menú o selector si quieres algo más pro.)
+# Importaciones del proyecto
+from data import preparar_dataset
+from modelo import entrenar_modelo, evaluar_modelo
 
-modo = "preparar"
-if modo == "preparar":
-    from data import preparar_dataset
-    preparar_dataset.preparar_dataset()
+# Paso 1: Preparar los datos
+print("[Main] Preparando dataset...")
+X_train, X_val, X_test, y_train, y_val, y_test = preparar_dataset.preparar_dataset()
+
+# Paso 2: Entrenar el modelo
+print("[Main] Entrenando modelo...")
+modelo = entrenar_modelo.entrenar_modelo(X_train, y_train, X_val, y_val)
+
+# Paso 3: Evaluar el modelo
+print("[Main] Evaluando modelo...")
+evaluar_modelo.evaluar_modelo(modelo, X_test, y_test)
+
+print("[Main] Proceso finalizado exitosamente.")

@@ -19,21 +19,22 @@ def obtener_ultimos_datos(limite=5000):
     cursor = conexion.cursor(dictionary=True)
 
     tabla = "ohlcv"
-    # tabla = os.getenv('BITSO_SYMBOL').replace("/", "_").lower() + "_1m"
-
 
     query = f"""
-    SELECT timestamp, open, high, low, close
+    SELECT timestamp, open, high, low, close, volume
     FROM {tabla}
-    ORDER BY timestamp DESC
+    ORDER BY timestamp ASC
     LIMIT {limite}
     """
     cursor.execute(query)
     resultados = cursor.fetchall()
 
     df = pd.DataFrame(resultados)
-    df = df.sort_values('timestamp')  # Muy importante: de más antiguo a más reciente
+    # df = df.sort_values('timestamp')  # Muy importante: de más antiguo a más reciente
     df.reset_index(drop=True, inplace=True)
+    
+    if not df['timestamp'].is_monotonic_increasing:
+        raise ValueError("[Error] Los datos no están en orden temporal ascendente. Verifica la carga.")
 
     cursor.close()
     conexion.close()

@@ -1,0 +1,6 @@
+{
+    "saldo_inicial": 1000,
+    "porcentaje_operacion": 0.1,
+    "comision": 0.0065,
+    "limite_datos": 1000
+}

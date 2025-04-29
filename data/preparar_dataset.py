@@ -72,3 +72,10 @@ print("[Dataset] ✅ Dataset guardado en carpeta 'dataset/'")
 
 def preparar_dataset():
     pass
+
+import pandas as pd
+
+def cargar_datos():
+    ruta_archivo = "data/dataset.csv"  # O usa os.getenv() si tienes la ruta en .env
+    df = pd.read_csv(ruta_archivo)
+    return df

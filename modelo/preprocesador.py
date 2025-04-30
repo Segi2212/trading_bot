@@ -1,3 +1,4 @@
+# preprocesador.py
 import numpy as np
 import pandas as pd
 
@@ -9,28 +10,37 @@ def calcular_rsi(serie, ventana=14):
     rsi = 100 - (100 / (1 + rs))
     return rsi
 
-def preparar_input_lstm(ohlcv):
+def preprocesar_para_prediccion(ohlcv, mean, std):
     """
-    Convierte los datos OHLCV en un array normalizado y formateado para el modelo LSTM.
+    Prepara datos OHLCV para predecir con modelo LSTM que espera (None, 46, 10)
     """
     df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
-    
+
     # Indicadores técnicos
     df['ema_9'] = df['close'].ewm(span=9).mean()
     df['rsi'] = calcular_rsi(df['close'])
+    df['returns'] = df['close'].pct_change().fillna(0)
+    df['log_volume'] = np.log1p(df['volume'])
+
+    # Otros features adicionales (ficticios pero comunes)
+    df['high_low'] = df['high'] - df['low']
+    df['open_close'] = df['open'] - df['close']
+    df['volatility'] = df['returns'].rolling(window=5).std().fillna(0)
+    df['momentum'] = df['close'] - df['close'].shift(5)
+    df['momentum'] = df['momentum'].fillna(0)
 
     # Eliminar filas con NaN
     df = df.dropna().reset_index(drop=True)
 
-    # Features a usar
-    features = df[['close', 'ema_9', 'rsi', 'volume']].values
+    # Selección de features
+    features = df[['open', 'high', 'low', 'close', 'volume',
+                   'ema_9', 'rsi', 'returns', 'log_volume',
+                   'volatility']].values
 
-    # Normalización z-score
-    mean = features.mean(axis=0)
-    std = features.std(axis=0)
+    # Normalización
     features_norm = (features - mean) / std
 
-    # Tomar últimos 60 pasos
-    secuencia = features_norm[-60:]
+    # Tomar últimos 46 pasos
+    secuencia = features_norm[-46:]
 
-    return np.expand_dims(secuencia, axis=0)  # shape: (1, 60, 4)
+    return np.expand_dims(secuencia, axis=0)  # shape: (1, 46, 10)

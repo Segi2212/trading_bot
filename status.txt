@@ -1,0 +1,98 @@
+Estado del Proyecto: Bot de Trading Algorítmico con Aprendizaje Automático
+Intención General
+El proyecto busca desarrollar un bot de trading algorítmico especializado en la criptomoneda Bitcoin, que opere de manera automática utilizando datos históricos minuto a minuto. El sistema se apoya en análisis técnico y modelos de aprendizaje automático, en particular redes neuronales LSTM, con el objetivo de predecir movimientos de mercado (Sube, Baja, Neutro) y tomar decisiones de compra o venta en consecuencia. Todo el entorno está diseñado para operar 24/7 con condiciones de red y hardware estables, utilizando la plataforma Bitso como exchange.
+
+Implementación Actual
+El proyecto cuenta con los siguientes componentes:
+
+Extracción y almacenamiento de datos
+
+Se descargan datos OHLCV (Open, High, Low, Close, Volume) de BTC minuto a minuto y se almacenan en una base de datos MySQL.
+
+Se han incluido indicadores técnicos como RSI y MACD.
+
+Preprocesamiento
+
+Los datos se limpian y se normalizan.
+
+Se construyen secuencias temporales para el modelo LSTM.
+
+Se aplica balanceo de clases con la técnica de oversampling (RandomOverSampler).
+
+Modelado y entrenamiento
+
+Se utiliza un modelo secuencial LSTM de Keras/TensorFlow.
+
+El modelo se entrena con conjuntos balanceados y validados.
+
+Se generan métricas de rendimiento (precision, recall, f1-score) para cada clase.
+
+Evaluación del modelo
+
+El modelo entrenado es evaluado sobre un conjunto de prueba no visto.
+
+Los resultados indican buena precisión en la clase dominante ("Neutro"), pero bajo desempeño en "Sube" y "Baja", posiblemente debido a desbalance residual o falta de representación en patrones.
+
+Pendientes para Finalizar el Proyecto
+Mejorar rendimiento en clases minoritarias
+
+Ajuste de arquitectura del modelo.
+
+Introducir técnicas como SMOTE o class_weight.
+
+Automatización de predicciones en tiempo real
+
+Módulo que consuma datos en vivo desde Bitso.
+
+Transformar los datos al mismo formato de entrenamiento.
+
+Aplicar el modelo para realizar predicciones y enviar órdenes de trading reales o simuladas.
+
+Evaluación financiera
+
+Crear simulaciones (backtesting) con métricas como ROI, drawdown y Sharpe ratio.
+
+Gestión de riesgo
+
+Incorporar reglas de stop-loss, take-profit, y control de exposición.
+
+Visualización de resultados
+
+Dashboards o gráficos en tiempo real con Matplotlib, Seaborn, o Plotly.
+
+Documentación y entorno de despliegue
+
+Añadir documentación técnica clara.
+
+Generar un entorno reproducible con requirements.txt.
+
+Limitaciones Actuales
+Desbalance severo entre clases en los datos históricos.
+
+El modelo actual puede sobreajustarse a la clase dominante.
+
+Aún no se ha integrado el modelo en un entorno de producción en tiempo real.
+
+Posibles Soluciones
+Implementar técnicas más avanzadas de balanceo como ADASYN o ensemble de modelos.
+
+Realizar tuning de hiperparámetros con Optuna o GridSearchCV.
+
+Evaluar arquitecturas híbridas (LSTM + Dense + Attention).
+
+Expandir el dataset con datos de otros exchanges o criptomonedas.
+
+Objetivo para la Inteligencia Artificial que Continuará el Proyecto
+La IA que tome el control del proyecto debe:
+
+Completar el pipeline de predicción en tiempo real.
+
+Mejorar el rendimiento del modelo en clases minoritarias.
+
+Diseñar mecanismos de backtesting y gestión de riesgo.
+
+Automatizar el envío de señales de trading (simuladas o reales).
+
+Presentar resultados en visualizaciones claras y accesibles.
+
+Optimizar el sistema para que funcione de forma autónoma, robusta y transparente.

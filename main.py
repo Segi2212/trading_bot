@@ -1,25 +1,37 @@
-import os
-from dotenv import load_dotenv
+# main.py
 
-# Cargar variables de entorno
-load_dotenv()
+from data.recolector import obtener_datos_en_vivo
+from db.mysql import guardar_datos
+from modelo.preprocesador import preparar_datos
+from modelo.predictor import cargar_modelo, predecir
+from trading.decision import tomar_decision
+from trading.ejecutor import ejecutar_orden
+from utils.logger import configurar_logger
 
-# Importaciones del proyecto
-# from data import preparar_dataset
-from modelo import entrenar_modelo, evaluar_modelo
-from modelo.preprocesar_datos import obtener_datos_balanceados
+logger = configurar_logger()
 
+def main():
+    try:
+        # 1. Obtener datos en vivo
+        datos = obtener_datos_en_vivo()
+        guardar_datos(datos)  # opcional: guardar en base de datos
 
-# Paso 1: Preparar los datos
-print("[Main] Preparando dataset...")
-X_train, X_val, y_train, y_val, X_test, y_test = obtener_datos_balanceados()
+        # 2. Preprocesar
+        X = preparar_datos(datos)
 
-# Paso 2: Entrenar el modelo
-print("[Main] Entrenando modelo...")
-modelo = entrenar_modelo.entrenar_modelo(X_train, y_train, X_val, y_val)
+        # 3. Cargar modelo entrenado y predecir
+        modelo = cargar_modelo('modelo_entrenado.h5')
+        prediccion = predecir(modelo, X)
 
-# Paso 3: Evaluar el modelo
-print("[Main] Evaluando modelo...")
-evaluar_modelo.evaluar_modelo(modelo, X_test, y_test)
+        # 4. Tomar decisión
+        accion = tomar_decision(prediccion)
+        logger.info(f"Predicción: {prediccion} → Acción: {accion}")
 
-print("[Main] Proceso finalizado exitosamente.")
+        # 5. Ejecutar orden (real o simulada)
+        ejecutar_orden(accion)
+
+    except Exception as e:
+        logger.error(f"Error en el flujo principal: {e}")
+
+if __name__ == "__main__":
+    main()

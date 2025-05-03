@@ -129,3 +129,39 @@ def guardar_datos_ohlcv(datos):
     finally:
         cursor.close()
         conexion.close()
+
+
+def test_conexion(bd=os.getenv("DB_NAME"), tabla='ohlcv'):
+    '''
+    Verifica la conexión a la base de datos y la existencia de una tabla específica.
+
+    Args:
+        bd (str, opcional): Nombre de la base de datos a la que conectar.
+                            Por defecto se toma de la variable de entorno DB_NAME.
+        tabla (str, opcional): Nombre de la tabla a verificar. Por defecto es 'ohlcv'.
+
+    Returns:
+        bool: True si la conexión es exitosa y la tabla existe, False en caso contrario.
+    '''
+    if not bd or not tabla:
+        print("Nombre de base de datos o tabla no válidos.")
+        return False
+
+    try:
+        conexion = conectar_db(bd)
+        cursor = conexion.cursor()
+        cursor.execute(f"SHOW TABLES LIKE %s", (tabla,))
+        resultado = cursor.fetchone()
+        cursor.close()
+        conexion.close()
+        if resultado:
+            print(
+                f"✅ Conexión exitosa. La tabla '{tabla}' existe en la base de datos '{bd}'.")
+            return True
+        else:
+            print(
+                f"⚠️ Conexión exitosa, pero la tabla '{tabla}' no existe en la base de datos '{bd}'.")
+            return False
+    except mysql.connector.Error as e:
+        print(f"❌ Error al conectar a la base de datos '{bd}': {e}")
+        return False
